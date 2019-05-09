@@ -63,19 +63,21 @@ int main() {
 	printf("Beginning game...\n");
     int card1 = 0;
     int card2 = 0;
-	while(balance > 0x000) {
-		printf("----- NEW ROUND -----\n");
-        printf("WINS: %i - LOSES: %i\n", wins, loses);
-		card1 = getCard();
-        card2 = getCard();
-        pScore = card1 + card2;
-        turn(card1, card2);
-
-		// control led
-		*(uint32_t *)h2p_lw_led_addr = ~balance;
-		// wait 100ms
-		usleep( 100*1000 );
-	}
+	*(uint32_t *)h2p_lw_led_addr = ~balance;
+	usleep(1000*1000 );
+//	while(balance > 0x000) {
+//		printf("----- NEW ROUND -----\n");
+//        printf("WINS: %i - LOSES: %i\n", wins, loses);
+//		card1 = getCard();
+//        card2 = getCard();
+//        pScore = card1 + card2;
+//        turn(card1, card2);
+//
+//		// control led
+//		*(uint32_t *)h2p_lw_led_addr = ~balance;
+//		// wait 100ms
+//		usleep( 100*1000 );
+//	}
 	
 
 	// clean up our memory mapping and exit
