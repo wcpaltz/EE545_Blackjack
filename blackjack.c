@@ -4,11 +4,27 @@
 #include <string.h>
 #define CARDS 52
 
+#include <stdio.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/mman.h>
+#include "hwlib.h"
+#include "socal/socal.h"
+#include "socal/hps.h"
+#include "socal/alt_gpio.h"
+#include "hps_0.h"
+
 // FPGA VARIABLES
-volatile int * LED_ptr = (int *) 0xFF200000; // red LED address
-volatile int * HEX7_HEX0_ptr = (int *) 0xFF200020; // HEX3_HEX0 address
-volatile int * SW_switch_ptr = (int *) 0xFF200040; // SW slider switch address
-volatile int * KEY_ptr = (int *) 0xFF200050; // pushbutton KEY address
+//volatile int * LED_ptr = (int *) 0xFF200000; // red LED address
+//volatile int * HEX7_HEX0_ptr = (int *) 0xFF200020; // HEX3_HEX0 address
+//volatile int * SW_switch_ptr = (int *) 0xFF200040; // SW slider switch address
+//volatile int * KEY_ptr = (int *) 0xFF200050; // pushbutton KEY address
+
+volatile int * HEX7_HEX0_ptr = (int *) 0x00050000; // HEX3_HEX0 address
+volatile int * SW_switch_ptr = (int *) 0x00060000; // SW slider switch address
+
+//volatile int HEX7_HEX0_ptr = 0x00050000; // HEX3_HEX0 address
+//volatile int SW_switch_ptr = 0x00060000; // SW slider switch address
 
 int HEX_bits = 0x0000000F; // initial pattern for HEX displays
 
@@ -19,10 +35,10 @@ int balance;
 int pScore;
 int dScore;
 int pot;
-int cardTypes[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10};
+int cardTypes[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 11};
 
 void set_hex_display();
-int check_key_1_press();
+//int check_key_1_press();
 
 void play();
 void turn(int, int);
@@ -35,8 +51,9 @@ char hit_or_stand();
 
 int main(){
   printf("Welcome to the FPGA BlackJack Simulator!\n");
-  srand(time(0));
-  play();
+//  srand(time(0));
+  set_hex_display();
+//  play();
   return 0;
 }
 
@@ -170,17 +187,17 @@ char hit_or_stand(){
   return hs;
 }
 
-int check_key_1_press(){
-  // return 1 if key pressed else return 0
-  if (*KEY_ptr != 0){ // KEY PRESSED
-    return 1;
-  }
-  else{
-    return 0;
-  }
-}
+//int check_key_1_press(){
+//  // return 1 if key pressed else return 0
+//  if (*KEY_ptr != 0){ // KEY PRESSED
+//    return 1;
+//  }
+//  else{
+//    return 0;
+//  }
+//}
 
 void set_hex_display(){
-  int HEX_bits = 0x00000000;
+  printf("TEST\n");
   *(HEX7_HEX0_ptr) = HEX_bits;
 }
