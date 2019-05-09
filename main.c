@@ -81,7 +81,9 @@ void play(){
     card1 = getCard();
     card2 = getCard();
     pScore = card1 + card2;
-    turn(card1, card2);
+    balance += 0x001;
+    usleep(1000*1000);
+//    turn(card1, card2);
 //    change_led();
   }
 }
