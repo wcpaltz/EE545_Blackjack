@@ -75,7 +75,7 @@ int main() {
         turn(card1, card2);
 		// control led
 		printf("Balance 2: %x\n", balance);
-		*(uint32_t *)h2p_lw_led_addr = ~balance;
+//		*(uint32_t *)h2p_lw_led_addr = ~balance;
 		// wait 100ms
 		usleep(1000*1000);
 		printf("Balance 3: %x\n", balance);
@@ -110,7 +110,6 @@ void turn(int mCard1, int mCard2){
         printf("BUST!\n");
 //		balance -= 0x001;
         decision = 'b';
-        loses++;
         break;
       }
       printf("New score: %i\n", pScore);
