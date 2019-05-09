@@ -91,28 +91,28 @@ void turn(int mCard1, int mCard2){
   char decision;
 //  printf("Two cards: %i - %i\n", mCard1, mCard2);
   printf("Your Current Score: %i\n", mCard1 + mCard2);
-  decision = hit_or_stand();
-  if(decision == 'h'){
-    int newCard;
-    while(decision == 'h'){
-      newCard = getCard();
-      pScore += newCard;
-      if(pScore > 21){
-        balance -= 0x001;
-        break;
-      }
-      decision = hit_or_stand();
-    }
-  }
+//  decision = hit_or_stand();
+//  if(decision == 'h'){
+//    int newCard;
+//    while(decision == 'h'){
+//      newCard = getCard();
+//      pScore += newCard;
+//      if(pScore > 21){
+//        balance -= 0x001;
+//        break;
+//      }
+//      decision = hit_or_stand();
+//    }
+//  }
 
-  if(decision == 's'){
-    dealer();
-    if(pScore > dScore){
-      balance += 0x001
-    }
-    else{
-      balance -= 0x001;
-    }
+//  if(decision == 's'){
+  dealer();
+  if(pScore > dScore){
+    balance += 0x001;
+  }
+  else{
+    balance -= 0x001;
+  }
 //    if(pScore == 21){
 //      balance += 0x001;
 //    }
@@ -125,7 +125,7 @@ void turn(int mCard1, int mCard2){
 //    else{
 //      balance -= 0x001;
 //    }
-  }
+//  }
 }
 
 
@@ -148,14 +148,14 @@ void hit_dealer(){
   dScore += nCard;
 }
 
-char hit_or_stand(){
-  char hs;
-  while(hs != 'h' && hs != 's'){
-    printf("Would you like to hit or stand (h/s)?\n");
-    scanf("%s", &hs);
-  }
-  return hs;
-}
+//char hit_or_stand(){
+//  char hs;
+//  while(hs != 'h' && hs != 's'){
+//    printf("Would you like to hit or stand (h/s)?\n");
+//    scanf("%s", &hs);
+//  }
+//  return hs;
+//}
 
 void change_led(){
   *(uint32_t *)h2p_lw_led_addr = ~balance;
