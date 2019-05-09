@@ -90,7 +90,7 @@ void play(){
 void turn(int mCard1, int mCard2){
   int decision;
 //  printf("Two cards: %i - %i\n", mCard1, mCard2);
-  printf("Your Current Score: %i\n", mCard1 + mCard2);
+//  printf("Your Current Score: %i\n", mCard1 + mCard2);
   decision = hit_or_stand();
   if(decision == 0){
     int newCard;
@@ -155,6 +155,7 @@ void hit_dealer(){
 char hit_or_stand(){
   int hs;
   while(hs != 1 && hs != 0){
+    printf("Your Current Score: %i\n", mCard1 + mCard2);
     printf("Would you like to hit or stand h(0)/s(1)?\n");
     scanf("%i", &hs);
   }
