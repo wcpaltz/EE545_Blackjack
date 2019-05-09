@@ -58,7 +58,7 @@ int main() {
 	
 
 	// toggle the LEDs a bit
-
+    srand(time(0));
 	balance = 0x005;
 	printf("Beginning game...\n");
     int card1 = 0;
