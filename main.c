@@ -104,21 +104,27 @@ void turn(int mCard1, int mCard2){
       decision = hit_or_stand();
     }
   }
-  
+
   if(decision == 's'){
     dealer();
-    if(pScore == 21){
-      balance += 0x001;
-    }
-    else if(pScore > dScore || dScore > 21 || pScore == 21){
-      balance += 0x001;
-    }
-    else if(pScore == dScore){
-      // DO NOTHING
+    if(pScore > dScore){
+      balance += 0x001
     }
     else{
       balance -= 0x001;
     }
+//    if(pScore == 21){
+//      balance += 0x001;
+//    }
+//    else if(pScore > dScore || dScore > 21){
+//      balance += 0x001;
+//    }
+//    else if(pScore == dScore){
+//      // DO NOTHING
+//    }
+//    else{
+//      balance -= 0x001;
+//    }
   }
 }
 
