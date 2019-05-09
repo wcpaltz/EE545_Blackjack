@@ -21,70 +21,75 @@ int dScore;
 int pot;
 int cardTypes[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 11};
 
-void change_led()
-void play();
 void turn(int, int);
 void hit_dealer();
 void dealer();
 int getCard();
 int ace();
+void stand();
 char hit_or_stand();
 
-void *virtual_base;
-int fd;
-void *h2p_lw_led_addr;
+int main() {
+	void *virtual_base;
+	int fd;
+	void *h2p_lw_led_addr;
 
-// map the address space for the LED registers into user space so we can interact with them.
-// we'll actually map in the entire CSR span of the HPS since we want to access various registers within that span
+	// map the address space for the LED registers into user space so we can interact with them.
+	// we'll actually map in the entire CSR span of the HPS since we want to access various registers within that span
+	
+	printf("Welcome to the FPGA BlackJack Simulator!\n");
+	
+	if( ( fd = open( "/dev/mem", ( O_RDWR | O_SYNC ) ) ) == -1 ) {
+		printf( "ERROR: could not open \"/dev/mem\"...\n" );
+		return( 1 );
+	}
 
-int main(){
-  printf("Welcome to the FPGA BlackJack Simulator!\n");
-  if( ( fd = open( "/dev/mem", ( O_RDWR | O_SYNC ) ) ) == -1 ) {
-    printf( "ERROR: could not open \"/dev/mem\"...\n" );
-    return( 1 );
-  }
+	virtual_base = mmap( NULL, HW_REGS_SPAN, ( PROT_READ | PROT_WRITE ), MAP_SHARED, fd, HW_REGS_BASE );
 
-  virtual_base = mmap( NULL, HW_REGS_SPAN, ( PROT_READ | PROT_WRITE ), MAP_SHARED, fd, HW_REGS_BASE );
+	if( virtual_base == MAP_FAILED ) {
+		printf( "ERROR: mmap() failed...\n" );
+		close( fd );
+		return( 1 );
+	}
+	
+	h2p_lw_led_addr=virtual_base + ( ( unsigned long  )( ALT_LWFPGASLVS_OFST + PIO_0_BASE ) & ( unsigned long)( HW_REGS_MASK ) );
+	
 
-  if( virtual_base == MAP_FAILED ) {
-    printf( "ERROR: mmap() failed...\n" );
-    close( fd );
-    return( 1 );
-  }
+	// toggle the LEDs a bit
+    srand(time(0));
+	balance = 0x005;
+	printf("Beginning game...\n");
+    int card1 = 0;
+    int card2 = 0;
+	*(uint32_t *)h2p_lw_led_addr = ~balance;
+	usleep(1000*1000);
+	while(balance > 0x000) {
+		printf("----- NEW ROUND -----\n");
+		printf("Balance 1: %x\n", balance);
+		card1 = getCard();
+        card2 = getCard();
+        pScore = card1 + card2;
+        turn(card1, card2);
+		// control led
+		printf("Balance 2: %x\n", balance);
+//		*(uint32_t *)h2p_lw_led_addr = ~balance;
+		// wait 100ms
+		usleep(1000*1000);
+		printf("Balance 3: %x\n", balance);
+	}
+	
 
-  h2p_lw_led_addr=virtual_base + ( ( unsigned long  )( ALT_LWFPGASLVS_OFST + PIO_0_BASE ) & ( unsigned long)( HW_REGS_MASK ) );
+	// clean up our memory mapping and exit
+	
+	if( munmap( virtual_base, HW_REGS_SPAN ) != 0 ) {
+		printf( "ERROR: munmap() failed...\n" );
+		close( fd );
+		return( 1 );
+	}
 
- 
-  srand(time(0));
-  *(uint32_t *)h2p_lw_led_addr = ~balance;
-  play();
-  	// clean up our memory mapping and exit
+	close( fd );
 
-  if( munmap( virtual_base, HW_REGS_SPAN ) != 0 ) {
-    printf( "ERROR: munmap() failed...\n" );
-    close( fd );
-    return( 1 );
-  }
-  close( fd );
-  return 0;
-}
-
-void play(){
-//  printf("Beginning game...\n500 credits added to your account\n");
-  printf("Beginning game...\n");
-  balance = 0x005;
-  int card1 = 0;
-  int card2 = 0;
-  pot = 0;
-  while(balance > 0x000){
-    printf("----- NEW ROUND -----\n");
-	printf("Balance: %x\n", balance);
-    card1 = getCard();
-    card2 = getCard();
-    pScore = card1 + card2;
-    turn(card1, card2);
-    change_led();
-  }
+	return( 0 );
 }
 
 void turn(int mCard1, int mCard2){
@@ -100,8 +105,8 @@ void turn(int mCard1, int mCard2){
       if(pScore > 21){
         printf("Player score: %i\n", pScore);
         printf("BUST!\n");
+//		balance -= 0x001;
         decision = 'b';
-        balance -= 0x001;
         break;
       }
       printf("New score: %i\n", pScore);
@@ -114,13 +119,13 @@ void turn(int mCard1, int mCard2){
     if(pScore == 21){
       printf("Player score: %i\n", pScore);
       printf("BLACKJACK! Player WINS!\n");
-      balance += 0x001;
+//	  balance += 0x001;
     }
     else if(pScore > dScore || dScore > 21 || pScore == 21){
       printf("Player score: %i\n", pScore);
       printf("Dealer score: %i\n", dScore);
       printf("Player WINS!\n");
-      balance += 0x001;
+//	  balance += 0x001;
     }
     else if(pScore == dScore){
       printf("Player score: %i\n", pScore);
@@ -131,11 +136,14 @@ void turn(int mCard1, int mCard2){
       printf("Player score: %i\n", pScore);
       printf("Dealer score: %i\n", dScore);
       printf("You LOSE\n");
-      balance -= 0x001;
+//      balance -= 0x001;
     }
   }
 }
 
+void stand(){
+  // DO NOTHING  
+}
 
 int getCard(){
   int card = (rand() % (12));
@@ -146,15 +154,10 @@ void dealer(){
   int deal1 = getCard();
   int deal2 = getCard();
   dScore = deal1 + deal2;
+//  printf("Dealers Turn...");
   while(dScore < 15){
     hit_dealer();
   }
-}
-
-int ace(){
-  printf("Inside ace()...\n");
-  return 0;
-  // TODO
 }
 
 void hit_dealer(){
@@ -169,8 +172,4 @@ char hit_or_stand(){
     scanf("%s", &hs);
   }
   return hs;
-}
-
-void change_led(){
-  *(uint32_t *)h2p_lw_led_addr = ~balance;
 }
