@@ -21,7 +21,7 @@ int dScore;
 int pot;
 int cardTypes[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 11};
 
-void change_led()
+void change_led();
 void play();
 void turn(int, int);
 void hit_dealer();
