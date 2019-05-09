@@ -155,7 +155,7 @@ void hit_dealer(){
 char hit_or_stand(){
   int hs;
   while(hs != 1 && hs != 0){
-    printf("Your Current Score: %i\n", mCard1 + mCard2);
+    printf("Your Current Score: %i\n", pScore);
     printf("Would you like to hit or stand h(0)/s(1)?\n");
     scanf("%i", &hs);
   }
