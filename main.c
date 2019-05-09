@@ -15,8 +15,6 @@
 #define HW_REGS_SPAN ( 0x04000000 )
 #define HW_REGS_MASK ( HW_REGS_SPAN - 1 )
 
-int wins;
-int loses;
 int balance;
 int pScore;
 int dScore;
@@ -67,7 +65,6 @@ int main() {
 	usleep(1000*1000);
 	while(balance > 0x000) {
 		printf("----- NEW ROUND -----\n");
-        printf("WINS: %i - LOSES: %i\n", wins, loses);
 		printf("Balance 1: %x\n", balance);
 		card1 = getCard();
         card2 = getCard();
@@ -122,15 +119,13 @@ void turn(int mCard1, int mCard2){
     if(pScore == 21){
       printf("Player score: %i\n", pScore);
       printf("BLACKJACK! Player WINS!\n");
-	  balance += 0x001;
-      wins++;
+//	  balance += 0x001;
     }
     else if(pScore > dScore || dScore > 21 || pScore == 21){
       printf("Player score: %i\n", pScore);
       printf("Dealer score: %i\n", dScore);
       printf("Player WINS!\n");
-	  balance += 0x001;
-      wins++;
+//	  balance += 0x001;
     }
     else if(pScore == dScore){
       printf("Player score: %i\n", pScore);
@@ -141,7 +136,7 @@ void turn(int mCard1, int mCard2){
       printf("Player score: %i\n", pScore);
       printf("Dealer score: %i\n", dScore);
       printf("You LOSE\n");
-      balance -= 0x001;
+//      balance -= 0x001;
     }
   }
 }
