@@ -54,7 +54,7 @@ int main(){
 
   h2p_lw_led_addr=virtual_base + ( ( unsigned long  )( ALT_LWFPGASLVS_OFST + PIO_0_BASE ) & ( unsigned long)( HW_REGS_MASK ) );
 
- 
+  balance = 0x005;
   srand(time(0));
   *(uint32_t *)h2p_lw_led_addr = ~balance;
   play();
@@ -72,7 +72,6 @@ int main(){
 void play(){
 //  printf("Beginning game...\n500 credits added to your account\n");
   printf("Beginning game...\n");
-  balance = 0x005;
   int card1 = 0;
   int card2 = 0;
   pot = 0;
@@ -83,7 +82,7 @@ void play(){
     card2 = getCard();
     pScore = card1 + card2;
     turn(card1, card2);
-    change_led();
+//    change_led();
   }
 }
 
