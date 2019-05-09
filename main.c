@@ -107,22 +107,26 @@ void turn(int mCard1, int mCard2){
 
   if(decision == 1){
     dealer();
-    if(pScore > dScore){
-      balance += 0x001;
-    }
-    else{
-      balance -= 0x001;
-    }
     if(pScore == 21){
+      printf("Player score: %i\n", pScore);
+      printf("BLACKJACK! Player WINS!\n");
       balance += 0x001;
     }
     else if(pScore > dScore || dScore > 21){
+      printf("Player score: %i\n", pScore);
+      printf("Dealer score: %i\n", dScore);
+      printf("Player WINS!\n");
       balance += 0x001;
     }
     else if(pScore == dScore){
-      // DO NOTHING
+      printf("Player score: %i\n", pScore);
+      printf("Dealer score: %i\n", dScore);
+      printf("TIE!\n");
     }
     else{
+      printf("Player score: %i\n", pScore);
+      printf("Dealer score: %i\n", dScore);
+      printf("You LOSE\n");
       balance -= 0x001;
     }
   }
