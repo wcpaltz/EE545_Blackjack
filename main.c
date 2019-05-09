@@ -105,7 +105,7 @@ void turn(int mCard1, int mCard2){
       if(pScore > 21){
         printf("Player score: %i\n", pScore);
         printf("BUST!\n");
-		balance -= 0x001;
+//		balance -= 0x001;
         decision = 'b';
         loses++;
         break;
@@ -120,14 +120,14 @@ void turn(int mCard1, int mCard2){
     if(pScore == 21){
       printf("Player score: %i\n", pScore);
       printf("BLACKJACK! Player WINS!\n");
-	  balance += 0x001;
+//	  balance += 0x001;
       wins++;
     }
     else if(pScore > dScore || dScore > 21 || pScore == 21){
       printf("Player score: %i\n", pScore);
       printf("Dealer score: %i\n", dScore);
       printf("Player WINS!\n");
-	  balance += 0x001;
+//	  balance += 0x001;
       wins++;
     }
     else if(pScore == dScore){
@@ -139,7 +139,7 @@ void turn(int mCard1, int mCard2){
       printf("Player score: %i\n", pScore);
       printf("Dealer score: %i\n", dScore);
       printf("You LOSE\n");
-      balance -= 0x001;
+//      balance -= 0x001;
     }
   }
 }
