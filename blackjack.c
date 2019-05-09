@@ -2,44 +2,25 @@
 #include <stdlib.h>
 #include <time.h>  
 #include <string.h>
-#define CARDS 52
-
-#include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <sys/mman.h>
+#include "hwlib.h"
+#include "socal/socal.h"
+#include "socal/hps.h"
+#include "socal/alt_gpio.h"
 #include "hps_0.h"
 
-// FPGA VARIABLES
-//volatile int * LED_ptr = (int *) 0xFF200000; // red LED address
-//volatile int * HEX7_HEX0_ptr = (int *) 0xFF200020; // HEX3_HEX0 address
-//volatile int * SW_switch_ptr = (int *) 0xFF200040; // SW slider switch address
-//volatile int * KEY_ptr = (int *) 0xFF200050; // pushbutton KEY address
+#define HW_REGS_BASE ( ALT_STM_OFST )
+#define HW_REGS_SPAN ( 0x04000000 )
+#define HW_REGS_MASK ( HW_REGS_SPAN - 1 )
 
-//volatile int * HEX7_HEX0_ptr = (int *) 0x00050000; // HEX3_HEX0 address
-//volatile int * SW_switch_ptr = (int *) 0x00060000; // SW slider switch address
-
-#define OUTPUT_SEVEN_SEGMENT_COMPONENT_TYPE   seven_segment
-#define OUTPUT_SEVEN_SEGMENT_COMPONENT_NAME   output_seven_segment
-#define OUTPUT_SEVEN_SEGMENT_BASE             0x40000
-#define OUTPUT_SEVEN_SEGMENT_SPAN             1024
-#define OUTPUT_SEVEN_SEGMENT_END              0x403ff
-
-//volatile int HEX7_HEX0_ptr = 0x00050000; // HEX3_HEX0 address
-//volatile int SW_switch_ptr = 0x00060000; // SW slider switch address
-
-int HEX_bits = 0x0000000F; // initial pattern for HEX displays
-
-
-int wins;
-int loses;
 int balance;
 int pScore;
 int dScore;
 int pot;
 int cardTypes[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 11};
 
-void set_hex_display();
-//int check_key_1_press();
 
 void play();
 void turn(int, int);
@@ -50,36 +31,60 @@ int ace();
 void stand();
 char hit_or_stand();
 
+void *virtual_base;
+int fd;
+void *h2p_lw_led_addr;
+
+// map the address space for the LED registers into user space so we can interact with them.
+// we'll actually map in the entire CSR span of the HPS since we want to access various registers within that span
+
+printf("Welcome to the FPGA BlackJack Simulator!\n");
+
+if( ( fd = open( "/dev/mem", ( O_RDWR | O_SYNC ) ) ) == -1 ) {
+  printf( "ERROR: could not open \"/dev/mem\"...\n" );
+  return( 1 );
+}
+
+virtual_base = mmap( NULL, HW_REGS_SPAN, ( PROT_READ | PROT_WRITE ), MAP_SHARED, fd, HW_REGS_BASE );
+
+if( virtual_base == MAP_FAILED ) {
+  printf( "ERROR: mmap() failed...\n" );
+  close( fd );
+  return( 1 );
+}
+
+h2p_lw_led_addr=virtual_base + ( ( unsigned long  )( ALT_LWFPGASLVS_OFST + PIO_0_BASE ) & ( unsigned long)( HW_REGS_MASK ) );
+
 int main(){
   printf("Welcome to the FPGA BlackJack Simulator!\n");
-//  srand(time(0));
-  set_hex_display();
-//  play();
+  srand(time(0));
+  *(uint32_t *)h2p_lw_led_addr = ~balance;
+  play();
+  	// clean up our memory mapping and exit
+
+  if( munmap( virtual_base, HW_REGS_SPAN ) != 0 ) {
+    printf( "ERROR: munmap() failed...\n" );
+    close( fd );
+    return( 1 );
+  }
+  close( fd );
   return 0;
 }
 
 void play(){
 //  printf("Beginning game...\n500 credits added to your account\n");
   printf("Beginning game...\n");
-  balance = 500;
+  balance = 0x005;
   int card1 = 0;
   int card2 = 0;
   pot = 0;
-  while(balance > 0){
+  while(balance > 0x000){
     printf("----- NEW ROUND -----\n");
-    printf("WINS: %i - LOSES: %i\n", wins, loses);
+	printf("Balance: %x\n", balance);
     card1 = getCard();
     card2 = getCard();
     pScore = card1 + card2;
     turn(card1, card2);
-    char ys;
-    while(ys != 'y' && ys != 'n'){
-      printf("Would you like to be done? (y/n)\n");
-      scanf("%s", &ys);
-    }
-    if(ys == 'y'){
-      balance = 0;
-    }
   }
 }
 
@@ -97,7 +102,7 @@ void turn(int mCard1, int mCard2){
         printf("Player score: %i\n", pScore);
         printf("BUST!\n");
         decision = 'b';
-        loses++;
+        balance -= 0x001;
         break;
       }
       printf("New score: %i\n", pScore);
@@ -110,13 +115,13 @@ void turn(int mCard1, int mCard2){
     if(pScore == 21){
       printf("Player score: %i\n", pScore);
       printf("BLACKJACK! Player WINS!\n");
-      wins++;
+      balance += 0x001;
     }
     else if(pScore > dScore || dScore > 21 || pScore == 21){
       printf("Player score: %i\n", pScore);
       printf("Dealer score: %i\n", dScore);
       printf("Player WINS!\n");
-      wins++;
+      balance += 0x001;
     }
     else if(pScore == dScore){
       printf("Player score: %i\n", pScore);
@@ -127,14 +132,11 @@ void turn(int mCard1, int mCard2){
       printf("Player score: %i\n", pScore);
       printf("Dealer score: %i\n", dScore);
       printf("You LOSE\n");
-      loses++;
+      balance -= 0x001;
     }
   }
 }
 
-void stand(){
-  // DO NOTHING  
-}
 
 int getCard(){
   int card = (rand() % (12));
@@ -145,28 +147,10 @@ void dealer(){
   int deal1 = getCard();
   int deal2 = getCard();
   dScore = deal1 + deal2;
-//  printf("Dealers Turn...");
   while(dScore < 15){
     hit_dealer();
   }
 }
-
-// DON'T USE ANYMORE
-//int bet(){
-////  printf("Inside bet()...\n");
-//  printf("Current balance: %i\n", balance);
-//  printf("Enter the amount you would like to bet.\n");
-//  int myBet = 0;
-//  scanf("%i", &myBet);
-//  while(myBet >= balance){
-//    printf("Your bet must be less than your current token balance.\n");
-//    scanf("%i\n", &myBet);
-//  }
-//  balance -= myBet;
-//  printf("You made a bet of %i. Good Luck!\n", myBet);
-//  pot = myBet;
-//  return 0;
-//}
 
 int ace(){
   printf("Inside ace()...\n");
@@ -188,17 +172,6 @@ char hit_or_stand(){
   return hs;
 }
 
-//int check_key_1_press(){
-//  // return 1 if key pressed else return 0
-//  if (*KEY_ptr != 0){ // KEY PRESSED
-//    return 1;
-//  }
-//  else{
-//    return 0;
-//  }
-//}
-
-void set_hex_display(){
-  printf("TEST\n");
-  *(HEX7_HEX0_ptr) = HEX_bits;
+void change_led(){
+  *(uint32_t *)h2p_lw_led_addr = ~balance;
 }
