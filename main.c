@@ -68,16 +68,17 @@ int main() {
 	while(balance > 0x000) {
 		printf("----- NEW ROUND -----\n");
         printf("WINS: %i - LOSES: %i\n", wins, loses);
-		printf("Balance: %x\n", balance);
+		printf("Balance 1: %x\n", balance);
 		card1 = getCard();
         card2 = getCard();
         pScore = card1 + card2;
         turn(card1, card2);
 		// control led
+		printf("Balance 2: %x\n", balance);
 		*(uint32_t *)h2p_lw_led_addr = ~balance;
 		// wait 100ms
 		usleep(1000*1000);
-		printf("Balance: %x\n", balance);
+		printf("Balance 3: %x\n", balance);
 	}
 	
 
