@@ -27,7 +27,6 @@ void turn(int, int);
 void hit_dealer();
 void dealer();
 int getCard();
-int ace();
 char hit_or_stand();
 
 void *virtual_base;
@@ -84,7 +83,7 @@ void play(){
     balance += 0x001;
     usleep(1000*1000);
 //    turn(card1, card2);
-//    change_led();
+    change_led();
   }
 }
 
@@ -113,25 +112,15 @@ void turn(int mCard1, int mCard2){
   if(decision == 's'){
     dealer();
     if(pScore == 21){
-      printf("Player score: %i\n", pScore);
-      printf("BLACKJACK! Player WINS!\n");
       balance += 0x001;
     }
     else if(pScore > dScore || dScore > 21 || pScore == 21){
-      printf("Player score: %i\n", pScore);
-      printf("Dealer score: %i\n", dScore);
-      printf("Player WINS!\n");
       balance += 0x001;
     }
     else if(pScore == dScore){
-      printf("Player score: %i\n", pScore);
-      printf("Dealer score: %i\n", dScore);
-      printf("TIE!\n");
+      // DO NOTHING
     }
     else{
-      printf("Player score: %i\n", pScore);
-      printf("Dealer score: %i\n", dScore);
-      printf("You LOSE\n");
       balance -= 0x001;
     }
   }
@@ -150,12 +139,6 @@ void dealer(){
   while(dScore < 15){
     hit_dealer();
   }
-}
-
-int ace(){
-  printf("Inside ace()...\n");
-  return 0;
-  // TODO
 }
 
 void hit_dealer(){
