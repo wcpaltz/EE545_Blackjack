@@ -64,20 +64,19 @@ int main() {
     int card1 = 0;
     int card2 = 0;
 	*(uint32_t *)h2p_lw_led_addr = ~balance;
-	usleep(1000*1000 );
-//	while(balance > 0x000) {
-//		printf("----- NEW ROUND -----\n");
-//        printf("WINS: %i - LOSES: %i\n", wins, loses);
-//		card1 = getCard();
-//        card2 = getCard();
-//        pScore = card1 + card2;
-//        turn(card1, card2);
-//
-//		// control led
-//		*(uint32_t *)h2p_lw_led_addr = ~balance;
-//		// wait 100ms
-//		usleep( 100*1000 );
-//	}
+	usleep(1000*1000);
+	while(balance > 0x000) {
+		printf("----- NEW ROUND -----\n");
+        printf("WINS: %i - LOSES: %i\n", wins, loses);
+		card1 = getCard();
+        card2 = getCard();
+        pScore = card1 + card2;
+        turn(card1, card2);
+		// control led
+		*(uint32_t *)h2p_lw_led_addr = ~balance;
+		// wait 100ms
+		usleep(1000*1000);
+	}
 	
 
 	// clean up our memory mapping and exit
@@ -162,29 +161,6 @@ void dealer(){
   while(dScore < 15){
     hit_dealer();
   }
-}
-
-// DON'T USE ANYMORE
-//int bet(){
-////  printf("Inside bet()...\n");
-//  printf("Current balance: %i\n", balance);
-//  printf("Enter the amount you would like to bet.\n");
-//  int myBet = 0;
-//  scanf("%i", &myBet);
-//  while(myBet >= balance){
-//    printf("Your bet must be less than your current token balance.\n");
-//    scanf("%i\n", &myBet);
-//  }
-//  balance -= myBet;
-//  printf("You made a bet of %i. Good Luck!\n", myBet);
-//  pot = myBet;
-//  return 0;
-//}
-
-int ace(){
-  printf("Inside ace()...\n");
-  return 0;
-  // TODO
 }
 
 void hit_dealer(){
