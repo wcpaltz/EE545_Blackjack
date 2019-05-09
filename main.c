@@ -98,9 +98,12 @@ void turn(int mCard1, int mCard2){
       newCard = getCard();
       pScore += newCard;
       if(pScore > 21){
+        printf("Player score: %i\n", pScore);
+        printf("BUST!\n");
         balance -= 0x001;
         break;
       }
+      printf("New score: %i\n", pScore);
       decision = hit_or_stand();
     }
   }
