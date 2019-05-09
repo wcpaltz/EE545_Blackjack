@@ -80,7 +80,6 @@ void play(){
     card1 = getCard();
     card2 = getCard();
     pScore = card1 + card2;
-//    balance += 0x001;
     usleep(1000*1000);
     turn(card1, card2);
     change_led();
@@ -88,10 +87,7 @@ void play(){
 }
 
 void turn(int mCard1, int mCard2){
-  int decision;
-//  printf("Two cards: %i - %i\n", mCard1, mCard2);
-//  printf("Your Current Score: %i\n", mCard1 + mCard2);
-  decision = hit_or_stand();
+  int decision = hit_or_stand();
   if(decision == 0){
     int newCard;
     while(decision == 0){
@@ -137,7 +133,7 @@ void turn(int mCard1, int mCard2){
 
 
 int getCard(){
-  int card = (rand() % (12));
+  int card = (rand() % (13));
   return cardTypes[card];
 }
 
