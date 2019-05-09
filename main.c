@@ -80,9 +80,9 @@ void play(){
     card1 = getCard();
     card2 = getCard();
     pScore = card1 + card2;
-    balance += 0x001;
+//    balance += 0x001;
     usleep(1000*1000);
-//    turn(card1, card2);
+    turn(card1, card2);
     change_led();
   }
 }
@@ -98,13 +98,9 @@ void turn(int mCard1, int mCard2){
       newCard = getCard();
       pScore += newCard;
       if(pScore > 21){
-        printf("Player score: %i\n", pScore);
-        printf("BUST!\n");
-        decision = 'b';
         balance -= 0x001;
         break;
       }
-      printf("New score: %i\n", pScore);
       decision = hit_or_stand();
     }
   }
