@@ -23,7 +23,6 @@ int dScore;
 int pot;
 int cardTypes[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 11};
 
-void play();
 void turn(int, int);
 void hit_dealer();
 void dealer();
@@ -90,12 +89,6 @@ int main() {
 	close( fd );
 
 	return( 0 );
-}
-
-int play(){
-//  printf("Beginning game...\n500 credits added to your account\n");
-
-
 }
 
 void turn(int mCard1, int mCard2){
